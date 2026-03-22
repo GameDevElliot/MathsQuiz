@@ -7,6 +7,7 @@
     <style>
         :root {
             --bottom-clearance: max(18px, env(safe-area-inset-bottom, 0px));
+            --choice-area-min-height: 150px;
         }
 
         html, body {
@@ -137,6 +138,8 @@
             width: 100%;
             max-width: 450px;
             margin: 0 auto;
+            min-height: var(--choice-area-min-height);
+            align-content: center;
         }
 
         button.game-btn {
@@ -174,6 +177,7 @@
         @media (max-width: 640px) {
             :root {
                 --bottom-clearance: max(64px, env(safe-area-inset-bottom, 0px));
+                --choice-area-min-height: 100px;
             }
 
             #ui {
@@ -191,6 +195,10 @@
                 min-height: 42px;
                 font-size: 11px;
                 padding: 6px 3px;
+            }
+
+            #answers button.game-btn {
+                min-height: 42px;
             }
         }
 
