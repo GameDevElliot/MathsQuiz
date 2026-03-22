@@ -2,9 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
     <title>Angle Game</title>
     <style>
+        :root {
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        html, body {
+            height: 100%;
+        }
+
         body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -12,7 +20,8 @@
             color: #111;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            height: 100dvh;
+            min-height: 100vh;
             overflow: hidden;
             touch-action: manipulation;
         }
@@ -91,7 +100,8 @@
             min-height: 180px; 
             display: flex;
             flex-direction: column;
-            padding-bottom: max(15px, env(safe-area-inset-bottom));
+            box-sizing: border-box;
+            padding-bottom: calc(15px + var(--safe-bottom));
         }
 
         #score {
@@ -260,9 +270,11 @@
     }
 
     function resize() {
-        W = canvas.width = window.innerWidth;
+        const viewportWidth = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+        const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        W = canvas.width = viewportWidth;
         // Account for the specific height of the new UI panel
-        H = canvas.height = window.innerHeight - uiDiv.offsetHeight; 
+        H = canvas.height = Math.max(0, viewportHeight - uiDiv.offsetHeight);
         if (geometry && geometry.line1) {
             redraw();
         }
@@ -273,6 +285,14 @@
             resize();
         }
     });
+
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', () => {
+            if (startScreen.style.display === 'none') {
+                resize();
+            }
+        });
+    }
 
     function rand(a, b) { return Math.random() * (b - a) + a; }
     function randi(a, b) { return Math.floor(rand(a, b + 1)); }
