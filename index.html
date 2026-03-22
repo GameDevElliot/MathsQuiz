@@ -312,6 +312,14 @@
         document.body.classList.add('shake');
     }
 
+    function triggerHaptic(type) {
+        if (!navigator.vibrate) return;
+
+        if (type === 'wrong') {
+            navigator.vibrate(120);
+        }
+    }
+
     function resize() {
         const appRect = app.getBoundingClientRect();
         W = canvas.width = Math.floor(appRect.width);
@@ -580,6 +588,7 @@
             setTimeout(showReasons, 600);
         } else {
             playSound('wrong');
+            triggerHaptic('wrong');
             triggerShake();
             btn.classList.add('wrong');
             btn.disabled = true;
@@ -621,6 +630,7 @@
             }
         } else {
             playSound('wrong');
+            triggerHaptic('wrong');
             triggerShake();
             btn.classList.add('wrong');
             btn.disabled = true;
