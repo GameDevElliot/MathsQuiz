@@ -7,6 +7,8 @@
     <style>
         :root {
             --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --viewport-bottom-inset: 0px;
+            --panel-bottom-gap: 15px;
         }
 
         html, body {
@@ -100,8 +102,9 @@
             min-height: 180px; 
             display: flex;
             flex-direction: column;
+            flex-shrink: 0;
             box-sizing: border-box;
-            padding-bottom: calc(15px + var(--safe-bottom));
+            padding-bottom: calc(var(--panel-bottom-gap) + max(var(--safe-bottom), var(--viewport-bottom-inset)));
         }
 
         #score {
@@ -160,6 +163,12 @@
             font-size: 12px;
             line-height: 1.2;
             text-transform: capitalize;
+        }
+
+        @media (max-width: 640px) {
+            :root {
+                --panel-bottom-gap: 28px;
+            }
         }
 
         .correct {
@@ -269,7 +278,19 @@
         document.body.classList.add('shake');
     }
 
+    function updateViewportInsets() {
+        let bottomInset = 0;
+
+        if (window.visualViewport) {
+            const visibleBottom = window.visualViewport.offsetTop + window.visualViewport.height;
+            bottomInset = Math.max(0, window.innerHeight - visibleBottom);
+        }
+
+        document.documentElement.style.setProperty('--viewport-bottom-inset', bottomInset + 'px');
+    }
+
     function resize() {
+        updateViewportInsets();
         const viewportWidth = window.visualViewport ? window.visualViewport.width : window.innerWidth;
         const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
         W = canvas.width = viewportWidth;
@@ -286,8 +307,20 @@
         }
     });
 
+    window.addEventListener('orientationchange', () => {
+        if (startScreen.style.display === 'none') {
+            resize();
+        }
+    });
+
     if (window.visualViewport) {
         window.visualViewport.addEventListener('resize', () => {
+            if (startScreen.style.display === 'none') {
+                resize();
+            }
+        });
+
+        window.visualViewport.addEventListener('scroll', () => {
             if (startScreen.style.display === 'none') {
                 resize();
             }
